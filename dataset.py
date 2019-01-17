@@ -9,6 +9,7 @@ from torch.utils.data import Dataset
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 from imgaug import augmenters as iaa
 from torchvision import transforms as T
+from get_sample_weights import get_sample_weights
 
 
 class HPADataset(Dataset):
@@ -30,6 +31,7 @@ class HPADataset(Dataset):
                 if i == idx:
                     self.df = df.iloc[train] if split == 'train' else df.iloc[val]
             self.len = len(self.df)
+            self.weights = get_sample_weights(self.df)
         if __name__ == '__main__':
             print(self.df)
             self.__getitem__(0)
@@ -68,7 +70,8 @@ class HPADataset(Dataset):
              T.Normalize([0.0789, 0.0529, 0.0546, 0.0814], [0.147, 0.113, 0.157, 0.148])])
 
     def __getitem__(self, index):
-        pass
+        index = int(index)
+        print(index)
         data = self.df.iloc[index]
         name = [data['Id'] + "_" + color + ".png" for color in ["red", "green", "blue", "yellow"]]
         images = [cv2.imread(f"{self.path}{'test' if self.split=='test' else 'train'}/{i}", cv2.IMREAD_GRAYSCALE) for i in name]
@@ -100,4 +103,4 @@ class HPADataset(Dataset):
 
 
 if __name__ == '__main__':
-    HPADataset('../input/', 0, 'test')
+    HPADataset('../input/', 0, 'train')
