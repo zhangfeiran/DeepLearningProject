@@ -10,7 +10,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 class HPADataset(object):
     def __init__(self, path: str, idx: int, split: str):
         self.path = path
-        df = pd.read_csv('input/train.csv')
+        df = pd.read_csv(self.path + 'train.csv')
         df['target_vec'] = df['Target'].map(lambda x: list(map(int, x.strip().split())))
         df['onehot'] = df['target_vec'].map(lambda x: np.sum(np.eye(28, dtype=int)[x], axis=0))
         X = df['Id'].tolist()
@@ -28,8 +28,8 @@ class HPADataset(object):
         pass
         data = self.df.iloc[index]
         name = [data['Id'] + "_" + color + ".png" for color in ["red", "green", "blue"]]
-        images = [cv2.imread(self.path + i, cv2.IMREAD_GRAYSCALE) for i in name]
-        image = img = np.stack(images, axis=2)
+        images = [cv2.imread(self.path + 'train/' + i, cv2.IMREAD_GRAYSCALE) for i in name]
+        image = img = np.stack(images, axis=0)
         label = np.array(data['onehot'])
         return (image, label)
 
@@ -38,4 +38,4 @@ class HPADataset(object):
 
 
 if __name__ == '__main__':
-    HPADataset('../input/train2/', 0, 'train')
+    HPADataset('../input/', 0, 'train')
