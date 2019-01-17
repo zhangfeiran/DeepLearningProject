@@ -4,6 +4,7 @@ if sys.platform == 'linux':
     import pip
     pip.main(['install', 'pandas'])
     pip.main(['install', 'iterative-stratification'])
+    pip.main(['install', 'imgaug'])
     os.chdir('./cos_person/')
     sys.path.append('./')
 
@@ -28,8 +29,17 @@ for fold_idx in range(4):
     test_dataset = HPADataset(path, None, 'test')
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size)
-    for i, data in enumerate(train_loader):
-        print(data[0].shape)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+
+    for i, (image,label) in enumerate(train_loader):
+        print(image.shape,label.shape)
+        break
+    for i, (image,label) in enumerate(val_loader):
+        print(image.shape,label.shape)
+        break
+    for i, data in enumerate(test_loader):
+        print(data.shape)
         break
 
     break
