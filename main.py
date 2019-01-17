@@ -1,4 +1,12 @@
-import os
+import os, sys
+
+if sys.platform == 'linux':
+    import pip
+    pip.main(['install', 'pandas'])
+    pip.main(['install', 'iterative-stratification'])
+    os.chdir('./cos_person/')
+    sys.path.append('./')
+
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
@@ -10,10 +18,17 @@ from dataset import HPADataset
 batch_size = 32
 
 for fold_idx in range(4):
-    dataset = HPADataset('../input/', fold_idx, 'train')
-    train_loader = DataLoader(dataset, batch_size=batch_size)
+    if sys.platform == 'linux':
+        path = './proteinatlas/'
+    else:
+        path = '../input/'
 
-    for i,data in enumerate(train_loader):
+    train_dataset = HPADataset(path, fold_idx, 'train')
+    val_dataset = HPADataset(path, fold_idx, 'val')
+    test_dataset = HPADataset(path, None, 'test')
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size)
+    for i, data in enumerate(train_loader):
         print(data[0].shape)
         break
 
