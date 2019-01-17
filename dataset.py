@@ -4,10 +4,12 @@ import numpy as np
 import pandas as pd
 import scipy.misc as misc
 import cv2
+import torchvision as tv
+from torch.utils.data import Dataset
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 
 
-class HPADataset(object):
+class HPADataset(Dataset):
     def __init__(self, path: str, idx: int, split: str):
         self.path = path
         df = pd.read_csv(self.path + 'train.csv')
@@ -20,18 +22,26 @@ class HPADataset(object):
             if i == idx:
                 self.df = df.iloc[train] if split == 'train' else df.iloc[val]
         self.len = len(self.df)
+        if __name__ == '__main__':
+            self.__getitem__(0)
 
-    def transform(self):
-        pass
+    def transform(self,img):
+        return tv.transforms.ToTensor()(img)
 
     def __getitem__(self, index):
         pass
         data = self.df.iloc[index]
         name = [data['Id'] + "_" + color + ".png" for color in ["red", "green", "blue"]]
         images = [cv2.imread(self.path + 'train/' + i, cv2.IMREAD_GRAYSCALE) for i in name]
-        image = img = np.stack(images, axis=0)
+
+        image = np.stack(images, axis=-1)
+        image = self.transform(image)
+        if __name__ == '__main__':
+            print(image.shape)
+            print(type(image[0,0,0]))
+            
         label = np.array(data['onehot'])
-        return (image, label)
+        return image, label
 
     def __len__(self):
         return self.len
