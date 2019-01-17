@@ -24,6 +24,7 @@ for fold_idx in range(4):
     else:
         path = '../input/'
 
+    print('getting dataset')
     train_dataset = HPADataset(path, fold_idx, 'train')
     val_dataset = HPADataset(path, fold_idx, 'val')
     test_dataset = HPADataset(path, None, 'test')
@@ -32,6 +33,7 @@ for fold_idx in range(4):
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
+    print('testing')
     for i, (image,label) in enumerate(train_loader):
         print(image.shape,label.shape)
         break

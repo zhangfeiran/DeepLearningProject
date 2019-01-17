@@ -40,11 +40,9 @@ class HPADataset(Dataset):
 
     def get_augumentor(self, split):
         if split != 'train':
-            self.augumentor = T.Compose([
-                T.ToPILImage(),
-                T.ToTensor(),
-                T.Normalize([0.0789, 0.0529, 0.0546, 0.0814], [0.147, 0.113, 0.157, 0.148])
-            ])
+            self.augumentor = T.Compose(
+                [T.ToPILImage(), T.ToTensor(),
+                 T.Normalize([0.0789, 0.0529, 0.0546, 0.0814], [0.147, 0.113, 0.157, 0.148])])
             return
 
         aug = iaa.SomeOf(
@@ -63,12 +61,11 @@ class HPADataset(Dataset):
                 ])
             ])
 
-        self.augumentor = T.Compose([
-            aug.augment_image,
-            T.ToPILImage(),
-            T.ToTensor(),
-            T.Normalize([0.0789, 0.0529, 0.0546, 0.0814], [0.147, 0.113, 0.157, 0.148])
-        ])
+        self.augumentor = T.Compose(
+            [aug.augment_image,
+             T.ToPILImage(),
+             T.ToTensor(),
+             T.Normalize([0.0789, 0.0529, 0.0546, 0.0814], [0.147, 0.113, 0.157, 0.148])])
 
     def __getitem__(self, index):
         pass
@@ -83,7 +80,17 @@ class HPADataset(Dataset):
             print(image.shape)
 
         if self.split == 'test':
-            return image
+            image = image.numpy()
+            images = [image]
+            images.append(np.fliplr(image))
+            images.append(np.flipud(image))
+            images.append(np.fliplr(images[-1]))
+            images.append(np.transpose(image, (0, 2, 1)))
+            images.append(np.flipud(images[-1]))
+            images.append(np.fliplr(images[-2]))
+            images.append(np.flipud(images[-1]))
+            images = np.stack(images, axis=0)
+            return torch.Tensor(images)
 
         label = np.array(data['onehot'])
         return image, label
@@ -93,4 +100,4 @@ class HPADataset(Dataset):
 
 
 if __name__ == '__main__':
-    HPADataset('../input/', 0, 'val')
+    HPADataset('../input/', 0, 'test')
