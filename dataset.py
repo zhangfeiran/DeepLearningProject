@@ -37,7 +37,6 @@ class HPADataset(Dataset):
             self.__getitem__(0)
 
     def transform(self, img):
-        # return tv.transforms.ToTensor()(img)
         return self.augumentor(img)
 
     def get_augumentor(self, split):
@@ -93,10 +92,10 @@ class HPADataset(Dataset):
             images.append(np.fliplr(images[-2]))
             images.append(np.flipud(images[-1]))
             images = np.stack(images, axis=0)
-            return torch.Tensor(images)
+            return {'image': torch.Tensor(images)}
 
         label = np.array(data['onehot'])
-        return image, label
+        return {'image': image, 'label': label}
 
     def __len__(self):
         return self.len
