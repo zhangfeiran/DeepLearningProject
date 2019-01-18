@@ -20,7 +20,6 @@ from tensorboardX import SummaryWriter
 # from transforms import policy_transform
 from models import Resnet34, binary_focal_loss, adam, f1_score
 from dataset import HPADataset
-from BatchCollator import BatchCollator
 import utils_checkpoint
 
 
@@ -180,7 +179,6 @@ for i in range(4):
     val_dataset = HPADataset(path, i, 'val')
     train_sampler = torch.utils.data.WeightedRandomSampler(train_dataset.weights, len(train_dataset.weights))
     batch_sampler = torch.utils.data.sampler.BatchSampler(train_sampler, 32, drop_last=True)
-    collator = BatchCollator()
 
     dataloaders['train'] = DataLoader(train_dataset, batch_sampler=batch_sampler)
     dataloaders['val'] = DataLoader(val_dataset, shuffle=True, batch_size=32)
